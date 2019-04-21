@@ -1,0 +1,14 @@
+//cmp
+struct edge{
+	int val,num;
+}a[maxn];
+bool cmp(edge a,edge b){
+	return a.val>b.val;
+}
+
+sort(a+1,a+1+cnt,cmp);
+
+//operator
+bool operator >(edge a,edge b){
+  return a.val<b.val;
+}
