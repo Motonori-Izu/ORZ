@@ -1,0 +1,14 @@
+typedef long long ll;
+ll quick_pow(ll a,ll c,ll mod) {
+    ll ret=1;
+    while(b > 0){
+        if(b & 1){
+            ans *= base;
+            ans %= m;
+        }
+        base *= base;
+        base %= m;
+        b >>= 1;
+    }
+    return ret;
+}
