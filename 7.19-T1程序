@@ -1,0 +1,36 @@
+#include<stdio.h>
+#include<cstring>
+#include<algorithm>
+using namespace std;
+#define N 1000005
+
+int i,j,n,num,S,p[N],vis[N],a[N],ans[N];
+
+int read(){
+	int x=0,f=1;char c=getchar();
+	while(c<'0'||c>'9'){if(c=='-')f=-1;c=getchar();}
+	while(c>='0'&&c<='9')x=x*10+c-'0',c=getchar();
+	return x*f;
+}
+
+void write(int x){
+	if(x>9)write(x/10);
+	putchar(x%10+'0');
+int main()
+{
+	freopen("sum.in","r",stdin);
+	freopen("sum.out","w",stdout);
+	S=read(),n=read();
+	for(i=1;i<=n;i++)a[i]=read(),p[a[i]]=1;
+	for(i=1,j=1;i<=n;i++){
+		if(vis[a[i]])continue;
+		if(!p[S-a[i]+1])ans[++num]=S-a[i]+1;
+			else{
+				while(p[j]||p[S-j+1])j++;
+				ans[++num]=j,ans[++num]=S-j+1;
+				vis[S-a[i]+1]=1;j++;
+			}
+	}write(num);putchar(10);
+	for(i=1;i<=num;i++)write(ans[i]),putchar(32);
+	return 0;
+}
