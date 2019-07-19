@@ -1,0 +1,20 @@
+int read(){
+    int x=0,f=1;char c=getchar();
+    while(c<'0'||c>'9'){if(c=='-')f=-1;c=getchar();}
+    while(c>='0'&&c<='9')x=x*10+c-'0',c=getchar();
+    return x*f;
+}
+
+//'0'=48,'9'=57;x=x*10+c-'0'=(x<<1)+(x<<3)-'0';
+
+void write(int x){
+    if(x>9)write(x/10);
+    putchar(x%10+48);
+}
+
+int main(){
+    int m,n;
+    m=read(),n=read();
+    write(n),putchar(10),write(m),putchar(32);
+    //printf("%d %d\n",n,m);
+}
