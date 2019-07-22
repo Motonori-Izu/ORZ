@@ -1,0 +1,86 @@
+#include<stdio.h>
+#include<cstring>
+#include<algorithm>
+using namespace std;
+#define N 65
+
+struct ff{int to,nxt;}e[N<<1];
+int i,j,u,v,n,cnt;
+int head[N],size[N],Max[N];
+double ans,f[N][N<<1][N<<1],g[2][N<<1][N<<1][N<<1];
+
+int fast(){
+	int res=0;
+	char c=getchar();
+	while(c<48||c>57)c=getchar();
+	while(c>=48&&c<=57)res=res*10+c-48,c=getchar();
+	return res;
+}
+
+void add(int u,int v){
+	e[++cnt]=(ff){v,head[u]};
+	head[u]=cnt;
+}
+
+int dfs(int now,int fa){
+	size[now]=1;
+	for(int i=head[now];i;i=e[i].nxt){
+		int v=e[i].to;
+		if(v!=fa)dfs(v,now),size[now]+=size[v];
+	}int S=size[now]<<1;
+	for(int i=0;i<=S;i++)g[0][0][0][i]=1.0;
+	
+	int p=0;
+	for(int i=head[now];i;i=e[i].nxt){
+		int v=e[i].to;
+		if(v!=fa){p^=1;
+			for(int j=0;j<=Max[v];j++)
+				for(int k=1;k<=S;k++)f[v][j][k]+=f[v][j][k-1];
+
+			for(int j=0;j<=Max[now];j++)
+			for(int k=0;k<=j;k++)
+			for(int h=0;h<=S;h++){
+				double val=g[p^1][j][k][h];
+				g[p^1][j][k][h]=0;
+				for(int l=0;l<=Max[v];l++){
+					double Val=f[v][l][h]*0.5;
+				//	printf("%d %d %d %d %d\n",p,j,k,h,l);
+				
+					if(l+1>j)g[p][l+1][j][h]+=Val*val;
+						else if(l+1>k)g[p][j][l+1][h]+=Val*val;
+							else g[p][j][k][h]+=Val*val;
+
+					if(l+2>j)g[p][l+2][j][h]+=Val*val;
+						else if(l+2>k)g[p][j][l+2][h]+=Val*val;
+							else g[p][j][k][h]+=Val*val;
+				}
+			}
+			Max[now]=max(Max[now],Max[v]+2);
+		}
+	}
+	
+	for(int i=0;i<=Max[now];i++)
+	for(int j=0;j<=i;j++)
+	for(int k=S;k>=0;k--){
+		if(k!=0)g[p][i][j][k]-=g[p][i][j][k-1];
+		f[now][i][max(i+j,k)]+=g[p][i][j][k];
+		g[p][i][j][k]=0;
+	}
+}
+
+int main()
+{
+	freopen("tree.in","r",stdin);
+	freopen("tree.out","w",stdout);
+	n=fast();
+	for(i=1;i<n;i++){
+		u=fast(),v=fast();
+		add(u,v),add(v,u);
+	}dfs(1,0);
+	//printf("%lf %lf %lf %lf\n",f[1][4][4],f[1][6][6],f[1][7][7],f[1][8][8]);
+	for(i=0;i<=Max[1];i++)
+	for(j=1;j<=n*2;j++)
+		ans+=f[1][i][j]*j;
+	printf("%.12lf\n",ans);
+	return 0;
+}
