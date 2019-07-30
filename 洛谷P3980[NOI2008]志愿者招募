@@ -1,0 +1,82 @@
+#include<bits/stdc++.h>
+using namespace std;
+const int N=2e6+1,inf=1e7,t=2e6;
+struct P{
+	int nxt,to,dis,num;
+}c[N<<2];
+int n,m,cnt,tot;
+int d[N],h[N],pre[N];
+bool vis[N];
+inline int read(){
+	int x=0;char ch=getchar();
+	while(ch<'0'||ch>'9')ch=getchar();
+	while(ch>='0'&&ch<='9'){x=(x<<3)+(x<<1)+(ch^48);ch=getchar();}
+	return x;
+}
+void print(int x){
+	if(x<0){putchar('-');x=-x;}
+	if(x>9)print(x/10);
+	putchar(x%10+'0');
+}
+void addi(int x,int y,int dis,int cn){
+	c[cnt].nxt=h[y],c[cnt].to=x,c[cnt].dis=0,c[cnt].num=-cn,h[y]=cnt++;
+	c[cnt].nxt=h[x],c[cnt].to=y,c[cnt].dis=dis,c[cnt].num=cn,h[x]=cnt++;
+}
+//链式前向星存图； 
+//em正反两遍，先存的是反向图，dis=0； 
+void EK(){
+	while(1){
+		//队列 
+	    queue<int>q;
+	    q.push(0);
+		memset(d,1,sizeof d);
+	    memset(pre,0,sizeof pre);
+	    d[0]=0;
+	    while(!q.empty()){
+		    int cur=q.front();q.pop();//队首出队 
+		    vis[cur]=0;
+		    for(int i=h[cur];i;i=c[i].nxt)//链式前向星读图bfs 
+		    	if(c[i].dis&&d[c[i].to]>d[cur]+c[i].num){//如果有更优的方案 
+			    	d[c[i].to]=d[cur]+c[i].num;//替换 
+			    	pre[c[i].to]=i;//为回溯做记录 
+			    	if(!vis[c[i].to]){//如果没走过 
+			    		vis[c[i].to]=1;//标记 
+			    		q.push(c[i].to);//入队 
+			    	}
+			    }
+    	}
+	    if(d[t]>inf)return;//如果 
+	    int sum=inf,now=t;
+	    while(pre[now]){//可以回溯 
+	    	int l=pre[now];
+	    	sum=min(sum,c[l].dis);//记录这条路的流量 
+	    	now=c[l^1].to;//到下一条边 
+	    }
+	    now=t;//返回源点 
+	    while(pre[now]){
+	    	int l=pre[now];// 再跑一遍 ，进行修改 
+	    	c[l].dis-=sum;//正向-流量 
+	    	c[l^1].dis+=sum;//反向+流量 
+	    	tot+=sum*c[l].num;//num是实际上的distance，此处计算总路程（总花费） 
+	    	now=c[l^1].to;//倒回去走 
+	    }
+	}
+}
+int main(){
+	n=read(),m=read();
+	for(int i=1;i<=n;i++){
+		int x;
+		x=read();
+		addi(i,i+1,inf-x,0);//记录容量，不足inf的部分用 带权边补 
+	}
+	addi(0,1,inf,0);//建图 
+	addi(n+1,t,inf,0); 
+	for(int i=1;i<=m;i++){
+		int x,y,dis;
+		x=read(),y=read(),dis=read();
+		addi(x,y+1,inf,dis);//建图 
+	}
+	EK();
+	print(tot);
+	return 0;
+}
